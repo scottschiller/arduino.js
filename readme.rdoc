@@ -1,3 +1,8 @@
+== arduino.js
+
+    An experimental JavaScript wrapper for the ActionScript "AS3Glue" library
+    allowing for JavaScript <-> Flash <-> Socket/serial proxy <-> Arduino USB
+    communication/control within a web browser. Needs Flash 9 + Firmata 2.0.
 
 == Requirements
 
