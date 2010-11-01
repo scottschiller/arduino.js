@@ -1,0 +1,2 @@
+#!/bin/bash
+/Applications/flexsdk/bin/mxmlc -static-link-runtime-shared-libraries=true -optimize=true  -o ../swf/arduinojs.swf -file-specs as3glue/ArduinoJS.as

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Arduino-JS</title>
+
+<!-- core library -->
+<script src="script/arduino.js"></script>
+
+<!-- demo app, you can remove this.. -->
+<script src="demo/demo.js"></script>
+
+<link rel="stylesheet" media="screen" href="demo/demo.css" />
+<script>
+
+// arduino.js: crash-course intro (config/setup for your own use)
+
+// specify where to find the flash (used for socket connection and control protocol)
+arduino.config.flash.url = 'swf/arduinojs.swf';
+
+// enable debugging to JS console (useful when prototyping)
+arduino.config.debug.enabled = true;
+
+// include flash-based debug console messages
+arduino.config.flash.debug = true;
+
+// true = show flash UI on-screen (good for initial set-up / troubleshooting)
+arduino.config.flash.showUI = false;
+
+// fallback: allow fake connections if socket fails, for testing offline etc.
+arduino.config.debug.offlineMode = true;
+
+// finally, connect when flash has loaded.
+// demo.js sets its own handlers, but here is a basic example:
+
+/*
+arduino.onload = function() {
+
+  arduino.connect('192.168.0.2', 5331, function() {
+    // yay, we are now connected and ready to go.
+    arduino.writeDigitalPin(13, 1); // flip pin 13 high
+  });
+
+};
+*/
+
+</script>
+</head>
+
+<body>
+
+<div id="content">
+
+ <h1><a href="http://www.schillmania.com/projects/arduino-js" title="arduino.js: JavaScript / Arduino Uno communication API" style="color:#000;text-decoration:none">arduino.js</a></h1>
+ <p>JavaScript-based Arduino Uno communication</p>
+
+ <p id="publish-date" title="Publish date">version: 2010.10.31</p>
+
+ <div id="device-status">
+  <p id="device-status-text"><button id="do-connect" onclick="startArduinoDemo()" title="Attempt to connect to an arduino device via socks/serial proxy" disabled="disabled">Connect</button></p>
+ </div>
+
+ <div id="pins" class="column-wrapper">
+
+  <div class="column">
+
+   <h2>Analog Inputs</h2>
+   <ul>
+    <li>A<sub>in0</sub>: <span id="analog-pin0-value"> </span></li>
+    <li>A<sub>in1</sub>: <span id="analog-pin1-value"> </span></li>
+    <li>A<sub>in2</sub>: <span id="analog-pin2-value"> </span></li>
+    <li>A<sub>in3</sub>: <span id="analog-pin3-value"> </span></li>
+    <li>A<sub>in4</sub>: <span id="analog-pin4-value"> </span></li>
+    <li>A<sub>in5</sub>: <span id="analog-pin5-value"> </span></li>
+   </ul>
+	
+   <div id="canvas-box">
+    <canvas id="arduino-canvas" width="256" height="336">This is a &lt;canvas&gt; element. You need a better browser to see the data visualization.</canvas>
+   </div>
+
+   <p>
+    <button onclick="window.clearTimeout(arduinoTimer);arduinoTimer=null;this.disabled='disabled'">Stop updating</button>
+   </p>
+
+   <p>Apply variable current to the analog inputs (eg. a potentiometer) to see live graphs.</p>
+
+  </div>
+
+  <div class="column">
+
+   <h2>Standard I/O Pins</h2>
+   <ul>
+    <li>Pin 2 <span id="pin2-value"> </span> <span id="pin2-button"></span></li>
+    <li>Pin 3 <span id="pin3-value"> </span> <span id="pin3-button"></span></li>
+    <li>Pin 4 <span id="pin4-value"> </span> <span id="pin4-button"></span></li>
+    <li>Pin 5 <span id="pin5-value"> </span> <span id="pin5-button"></span></li>
+    <li>Pin 6 <span id="pin6-value"> </span> <span id="pin6-button"></span></li>
+    <li>Pin 7 <span id="pin7-value"> </span> <span id="pin7-button"></span></li>
+    <li>Pin 8 <span id="pin8-value"> </span> <span id="pin8-button"></span></li>
+    <li>Pin 9 <span id="pin9-value"> </span> <span id="pin9-button"></span></li>
+    <li>Pin 10 <span id="pin10-value"> </span> <span id="pin10-button"></span></li>
+    <li>Pin 11 <span id="pin11-value"> </span> <span id="pin11-button"></span></li>
+    <li>Pin 12 <span id="pin12-value"> </span> <span id="pin12-button"></span></li>
+    <li>Pin 13 <span id="pin13-value"> </span> <span id="pin13-button"></span></li>
+   </ul>
+
+   <p>Use arduino.writeDigitalPin(pin, value) and writeAnalogPin(pin, value) to change values.</p>
+
+   <h2 style="margin-top:1.5em">Pin 13/LED Blink Test</h2>
+   <p>Pin 13 typically has a surface-mount LED (eg. as with the Uno) representing binary output.</p>
+   <p>Interval (msec): &nbsp;<input id="blink-interval" type="text" value="1000" style="width:5em" /></p>
+
+  </div>
+
+ </div>
+
+ <div class="column-wrapper">
+
+  <h2 id="requirements">Requirements</h2>
+
+  <ul>
+   <li>Arduino Uno (USB) running Standard Firmata 2.0+ software (via Arduino IDE)</li>
+   <li>Socket/serial proxy such as SerialNet.pde (Processing IDE-based script), or serproxy executable</li>
+   <li>Modern web browser with Flash 9 (for socket connection) and JavaScript enabled</li>
+   <li>If viewing offline, 
+  </ul>
+
+  <h2 id="download">Download</h2>
+  <p>See the latest at <a href="http://github.com/scottschiller/arduino-js">github.com/scottschiller/arduino-js</a>.</p>
+
+  <h2 id="startup">Startup Process</h2>
+
+  <p>An approximation of how things begin:</p>
+
+  <ul>
+   <li>arduino.config options can be set for flash (URL), debug, pin types etc.</li>
+   <li>arduino.js starts, loads flash SWF (for socket connection to proxy) - may time out if flash blocked/missing or security errors</li>
+   <li>User-assigned arduino.onload() fires, ready to call arduino.connect()</li>
+   <li>arduino.connect() is called, with parameters for host and port eg. 127.0.0.1 and 5331</li>
+   <li>Flash connects to socket proxy, talks to Arduino, reports back "OK"</li>
+   <li>On "OK", arduino JS applies pin types based on arduino.config.pins - I/O is now ready.</li>
+  </ul>
+
+  <h2 id="setup">Setup</h2>
+
+  <p>Calls are made via the "arduino" object. Generally, parameters are set and then referenced at initialization/onload().</p>
+
+<pre><code>arduino.config.flash.url = '/path/to/arduinojs.swf';
+
+arduino.config.debug.enabled = true; <span>// useful for connection setup/troubleshooting</span>
+
+arduino.config.debug.flash.showUI = true; <span>// helps when fixing flash/onload() problems</span>
+
+<span>// configuring pins by type: digitalIn, digitalOut, pwmOut, servo: see arduino.config.pins array</span>
+
+arduino.onload = function() {
+
+  <span>// Flash has loaded, now we're ready to connect to the proxy..</span>
+
+  arduino.connect('127.0.0.1', '5331', function() { <span>// host, port, "on connect..."</span>
+
+    <span>// Yay, Arduino is now ready for I/O operations</span>
+
+    <span>// write a high bit to digital pin 13, turn on built-in LED etc.</span>
+    arduino.writeDigitalPin(13, 1);
+
+    <span>// reading from digital inputs</span>
+    arduino.getDigitalData(&lt;pin number&gt;);
+
+    <span>// reading from analog inputs (0-5 on Arduino Uno, separate from digital pins)</span>
+    arduino.getAnalogData(&lt;pin number&gt;);
+
+    <span>// digital output</span>
+    // a.writeDigitalPin(&lt;pin number&gt;, &lt;0 or 1&gt;);
+
+    <span>// pins configured with "PWM" type</span>
+    // a.writeAnalogPin(&lt;pin number&gt;, &lt;0 - 255&gt;);
+
+    <span>// pins configured with "servo" type</span>
+    // a.writeAnalogPin(&lt;pin number&gt;, &lt;0-179&gt;);
+
+  });
+
+};
+</code></pre>
+
+  <h2 id="pin-configuration">Pin Configuration</h2>
+
+  <p>Pins can be set up according to available types (options): digitalIn, digitalOut, pwmOut or servo. The dedicated analog ports are analogIn only.</p>
+
+<pre><code>arduino.config.pins = [
+
+  <span>// - type --------- label ----------- options ---</span>
+
+  null,            <span>// Pin 0         null (is RX)</span>
+  nulll,           <span>// Pin 1         null (is TX)</span>
+  'digitalOut',    <span>// Pin 2         digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 3         pwmOut or digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 4         digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 5         pwmOut or digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 6         pwmOut or digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 7         digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 8         digitalIn or digitalOut</span>
+  'pwmOut',        <span>// Pin 9         pwmOut or digitalIn or digitalOut or servo</span>
+  'pwmOut',        <span>// Pin 10        pwmOut or digitalIn or digitalOut or servo</span>
+  'pwmOut',        <span>// Pin 11        pwmOut or digitalIn or digitalOut</span>
+  'digitalIn',     <span>// Pin 12        digitalIn or digitalOut</span>
+  'digitalOut',    <span>// Pin 13        digitalIn or digialOut (LED connected)</span>
+
+  <span>// -- dedicated analog inputs (Arduino Uno) ------</span>
+
+  'analogIn',      <span>// Analog pin 0  analogIn</span>
+  'analogIn',      <span>// Analog pin 1  analogIn</span>
+  'analogIn',      <span>// Analog pin 2  analogIn</span>
+  'analogIn',      <span>// Analog pin 3  analogIn</span>
+  'analogIn',      <span>// Analog pin 4  analogIn</span>
+  'analogIn'       <span>// Analog pin 5  analogIn</span>
+
+];</code></pre>
+
+  <p>The pin configuration array is applied when the arduino connection is established, after connect() and before the connect success handler.</p>
+
+  <h2 id="flash-troubleshooting">Flash Troubleshooting</h2>
+
+  <p>If you are viewing this page offline (non-HTTP eg. file:// or c:\ and so on), you may need to adjust the Flash Player Security Settings and allow this file as a "trusted" location.</p>
+  <p>Check the <a href="swf/arduinojs.swf">arduinojs.swf</a> file and see if it mentions security-related messages. If so, hit up the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings</a> panel. You will need to add the current location (Edit Locations -&gt; Add Location -&gt; Browse For Folder) and choose the current directory/folder in order for JS + Flash communication to work offline.</p>
+
+  <h2 id="general-disclaimer">General Disclaimer</h2>
+  <p>Of course, this is experimental; check <a href="script/arduino.js">arduino.js</a> for the actual code, API and comments.</p>  
+
+  <h2 id="about">About</h2>
+  <p>arduino.js is an experiment by <a href="http://www.schillmania.com/" title="Scott Schiller's personal site">Scott Schiller</a>.</p>
+  <p>This project would not have been possible without open-source code and libraries made available by other Arduino fans. See <a href="license.txt">license.txt</a> for details.</p>
+
+ </div>
+
+</div>
+
+</body>
+</html>

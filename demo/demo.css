@@ -1,0 +1,109 @@
+body {
+ color: #000;
+ font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, "sans-serif";
+}
+
+#content {
+ margin: 0px 1em;
+}
+
+a {
+ text-decoration: none;
+}
+
+a:hover {
+ background-color: blue;
+ color: white;
+}
+
+h1 {
+ font-size: 300%;
+ margin-top: 0.25em;
+ margin-bottom: 0.5em;
+}
+
+h2 {
+ margin-top: 1em;
+}
+
+h2 {
+ padding-bottom: 0.1em;
+ border-bottom: 1px solid #999;
+}
+
+ul {
+ padding-left: 1.5em;
+ font-size: small;
+ line-height: 1.75em;
+}
+
+ul li span {
+ font-weight: bold;
+}
+
+ul li {
+ position: relative;
+}
+
+ul li button {
+ position: absolute;
+ right: 0px;
+ top: 2px;
+}
+
+#device-status {
+ color: #999;
+}
+
+.column-wrapper {
+ /* two-column flex layout? This seems to work in modern browsers. */
+ display: table;
+ width: 50em;
+ margin: -1em 0px 0px 0px;
+}
+
+.column {
+ display: table-cell;
+}
+
+.column:first-child {
+ padding-right: 1em;
+}
+
+.column p {
+ font-size: small;
+}
+
+#canvas-box {
+ padding: 0px 5px;
+ border: 1px solid #ccc;
+ display: inline-block;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ border-radius: 5px;
+}
+
+pre, code {
+ margin: 0px;
+ padding: 0px;
+}
+
+code span {
+ color: #666;
+}
+
+pre {
+ background: #fcfcfc;
+ padding: 1.5em;
+ border-left: 3px solid #eee;
+ border-right: 3px solid #eee;
+ font-size: small;
+}
+
+#publish-date {
+ position: absolute;
+ right: 1.5em;
+ top: 0px;
+ color: #999;
+ font-size: small;
+}
