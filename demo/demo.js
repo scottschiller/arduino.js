@@ -85,7 +85,8 @@ function CanvasThingy(analogPins) {
 arduino.onload = function() {
   // flash loaded, etc. Allow "connect" button.
   var o = document.getElementById('do-connect'),
-      oMsg = document.getElementById('problem');
+      oMsg = document.getElementById('problem'),
+      oFlash = document.getElementById(arduino.config.flash.containerID);
   if (o) {
     o.disabled = '';
     delete o.disabled;
@@ -93,6 +94,10 @@ arduino.onload = function() {
   if (oMsg) {
     // error recovery
     oMsg.innerHTML = 'Flash loaded, ready to connect.';
+    // try to re-hide the flash, too?
+    oFlash.style.background = 'transparent';
+    oFlash.style.width = '8px';
+    oFlash.style.height = '8px';
   }
 }
 
