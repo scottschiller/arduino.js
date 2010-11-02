@@ -50,7 +50,7 @@ arduino.onload = function() {
 
 <div id="content">
 
- <h1><a href="http://www.schillmania.com/projects/arduino-js" title="arduino.js: JavaScript / Arduino Uno communication API" style="color:#000;text-decoration:none">arduino.js</a></h1>
+ <h1><a href="http://www.schillmania.com/projects/arduino-js" title="arduino.js: JavaScript / Arduino Uno communication API">arduino.js</a></h1>
  <p>JavaScript-based Arduino Uno communication</p>
 
  <p id="publish-date" title="Publish date">version: 2010.10.31</p>
@@ -103,8 +103,6 @@ arduino.onload = function() {
     <li>Pin 13 <span id="pin13-value"> </span> <span id="pin13-button"></span></li>
    </ul>
 
-   <p>Use arduino.writeDigitalPin(pin, value) and writeAnalogPin(pin, value) to change values.</p>
-
    <h2 style="margin-top:1.5em">Pin 13/LED Blink Test</h2>
    <p>Pin 13 typically has a surface-mount LED (eg. as with the Uno) representing binary output.</p>
    <p>Interval (msec): &nbsp;<input id="blink-interval" type="text" value="1000" style="width:5em" /></p>
@@ -117,12 +115,17 @@ arduino.onload = function() {
 
   <h2 id="requirements">Requirements</h2>
 
+  <p>A small shopping list of software is needed to get everything working.</p>
+
   <ul>
+   <li><a href="http://www.arduino.cc/playground/Interfacing/Flash" title="Arduino.cc: Interfacing with Flash">Arduino and Flash</a> overview, steps #1 and 2</li>
    <li>Arduino Uno (USB) running Standard Firmata 2.0+ software (via Arduino IDE)</li>
-   <li>Socket/serial proxy such as SerialNet.pde (Processing IDE-based script), or serproxy executable</li>
+   <li><a href="http://www.arduino.cc/playground/Interfacing/SerialNet" title="Arduino: Interfacing: Serial To Network Proxies">Socket/serial proxy</a> such as SerialNet.pde (Processing IDE-based script), or serproxy executable</li>
    <li>Modern web browser with Flash 9 (for socket connection) and JavaScript enabled</li>
-   <li>If viewing offline, 
+   <li>If viewing offline, you may need to adjust some Flash player security settings; see <a href="#flash-troubleshooting">Flash Troubleshooting</a>.</li> 
   </ul>
+
+ <p>Some serial/socks programs work better on Windows, but I've had good results with SerialNet. I found the Standard Firmata supplied with the Arduino IDE worked with SerialNet (in Processing), both set to run at 115200 baud on a Mac with Snow Leopard. SerialNet also worked nicely on a WinXP laptop.</p>
 
   <h2 id="download">Download</h2>
   <p>See the latest at <a href="http://github.com/scottschiller/arduino.js">github.com/scottschiller/arduino-js</a>.</p>
@@ -134,15 +137,15 @@ arduino.onload = function() {
   <ul>
    <li>arduino.config options can be set for flash (URL), debug, pin types etc.</li>
    <li>arduino.js starts, loads flash SWF (for socket connection to proxy) - may time out if flash blocked/missing or security errors</li>
-   <li>User-assigned arduino.onload() fires, ready to call arduino.connect()</li>
-   <li>arduino.connect() is called, with parameters for host and port eg. 127.0.0.1 and 5331</li>
+   <li>User-assigned <code>arduino.onload()</code> fires - flash is ready to go, <code>arduino.connect()</code> can then be called</li>
+   <li><code>arduino.connect()</code> is called, with parameters for host and port eg. 127.0.0.1 and 5331</li>
    <li>Flash connects to socket proxy, talks to Arduino, reports back "OK"</li>
    <li>On "OK", arduino JS applies pin types based on arduino.config.pins - I/O is now ready.</li>
   </ul>
 
   <h2 id="setup">Setup</h2>
 
-  <p>Calls are made via the "arduino" object. Generally, parameters are set and then referenced at initialization/onload().</p>
+  <p>Calls are made via the "arduino" object; arduino.js and .swf are the only two files needed. Parameters as shown below can be set either inline or externally, and are then referenced at init/<code>onload()</code> time.</p>
 
 <pre><code>arduino.config.flash.url = '/path/to/arduinojs.swf';
 
@@ -170,29 +173,64 @@ arduino.onload = function() {
     arduino.getAnalogData(&lt;pin number&gt;);
 
     <span>// digital output</span>
-    // a.writeDigitalPin(&lt;pin number&gt;, &lt;0 or 1&gt;);
+    a.writeDigitalPin(&lt;pin number&gt;, &lt;0 or 1&gt;);
 
     <span>// pins configured with "PWM" type</span>
-    // a.writeAnalogPin(&lt;pin number&gt;, &lt;0 - 255&gt;);
+    a.writeAnalogPin(&lt;pin number&gt;, &lt;0 - 255&gt;);
 
     <span>// pins configured with "servo" type</span>
-    // a.writeAnalogPin(&lt;pin number&gt;, &lt;0-179&gt;);
+    a.writeAnalogPin(&lt;pin number&gt;, &lt;0-179&gt;);
 
   });
 
 };
 </code></pre>
 
+  <h2 id="onreceivedata-events">Reading Data: onReceiveData()-style Events vs. Polling</h2>
+
+  <p>When reading data from the Arduino, you can either use a <code>setInterval</code>-based polling-style approach that regularly calls <code>getAnalogData()</code> / <code>getDigitalData()</code>, or assign event handlers which will fire when analog and digital data is received. Depending on your use case, the latter may be more efficient.</p>
+
+  <p>In either case, arduino.js caches data from all onReceiveData-type events in a local JS array, so user API calls to get data don't have to hit Flash.</p>
+
+<pre><code><span>// Event callbacks for analog/digital RX</span>
+
+arduino.onAnalogReceiveData = function(pinNumber, port, value) {
+
+  console.log('Analog RX: pin ' + pinNumber + ' = ' + value + ', port: '+port);
+
+}
+
+arduino.onAnalogReceiveData = function(pinNumber, port, value) {
+
+  console.log('Digital RX: pin ' + pinNumber + ' = ' + value + ', port: '+port);
+
+}
+
+<span>// Alternate: Polling-style, read inputs at regular interval</span>
+
+function readData() {
+
+  console.log('Pin 13 value: ' + arduino.getDigitalData(13));
+  console.log('Analog input 0 value: ' + arduino.getAnalogData(0));
+
+}
+
+setInterval(readData, 250);
+
+</code></pre>
+
+  <p>Note that analog data RX events may fire quite regularly due to electrical noise and fluctuating input values.</p>
+
   <h2 id="pin-configuration">Pin Configuration</h2>
 
-  <p>Pins can be set up according to available types (options): digitalIn, digitalOut, pwmOut or servo. The dedicated analog ports are analogIn only.</p>
+  <p>Pins can be set up according to available types (options): <code>digitalIn</code>, <code>digitalOut</code>, <code>pwmOut</code> or <code>servo</code>. The dedicated analog ports are <code>analogIn</code> only.</p>
 
 <pre><code>arduino.config.pins = [
 
   <span>// - type --------- label ----------- options ---</span>
 
   null,            <span>// Pin 0         null (is RX)</span>
-  nulll,           <span>// Pin 1         null (is TX)</span>
+  null,            <span>// Pin 1         null (is TX)</span>
   'digitalOut',    <span>// Pin 2         digitalIn or digitalOut</span>
   'digitalOut',    <span>// Pin 3         pwmOut or digitalIn or digitalOut</span>
   'digitalOut',    <span>// Pin 4         digitalIn or digitalOut</span>
@@ -217,21 +255,32 @@ arduino.onload = function() {
 
 ];</code></pre>
 
-  <p>The pin configuration array is applied when the arduino connection is established, after connect() and before the connect success handler.</p>
+  <p>The pin configuration array is applied when the arduino connection is established, after <code>connect()</code> and before the connect success handler.</p>
 
   <h2 id="flash-troubleshooting">Flash Troubleshooting</h2>
 
   <p>If you are viewing this page offline (non-HTTP eg. file:// or c:\ and so on), you may need to adjust the Flash Player Security Settings and allow this file as a "trusted" location.</p>
+
   <p>Check the <a href="swf/arduinojs.swf">arduinojs.swf</a> file and see if it mentions security-related messages. If so, hit up the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings</a> panel. You will need to add the current location (Edit Locations -&gt; Add Location -&gt; Browse For Folder) and choose the current directory/folder in order for JS + Flash communication to work offline.</p>
 
   <h2 id="general-disclaimer">General Disclaimer</h2>
-  <p>Of course, this is experimental; check <a href="script/arduino.js">arduino.js</a> for the actual code, API and comments.</p>  
+
+  <p>Of course, this is experimental; check <a href="script/arduino.js">arduino.js</a> for the actual code, other API methods and comments.</p>  
 
   <h2 id="about">About</h2>
+
   <p>arduino.js is an experiment by <a href="http://www.schillmania.com/" title="Scott Schiller's personal site">Scott Schiller</a>.</p>
+
   <p>This project would not have been possible without open-source code and libraries made available by other Arduino fans. See <a href="license.txt">license.txt</a> for details.</p>
 
  </div>
+
+ <script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
+ <script type="text/javascript">
+ try {
+ reinvigorate.track("v7rwx-041051z6tw");
+ } catch(err) {}
+ </script>
 
 </div>
 

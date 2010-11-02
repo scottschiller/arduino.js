@@ -109,8 +109,8 @@ function Arduino() {
       useHighPerformance: true,  // true = uses position:fixed for (hidden) on-screen positioning, better responsiveness
       containerID: 'arduino-container', // <div> element to create or append to
       movieID: 'arduinoSWF',     // for the <embed> or <object>
-      movieWidth: 480,
-      movieHeight: 360
+      movieWidth: 400,
+      movieHeight: 120
 
     }
 
@@ -317,6 +317,26 @@ function Arduino() {
       self.connectFailed = true;
     },
 
+    startupFailed: function() {
+      var o = getSWF(), oBox = document.getElementById(arduino.config.flash.containerID),
+          didLoad = o && typeof o.PercentLoaded !== 'undefined' && o.PercentLoaded() > 0,
+          isHTTP = document.location.protocol.match(/http/);
+      self.writeDebug('arduino::flash::SWF load/start-up failed');
+      self.writeDebug('arduino::makeSWF: '+(!didLoad ? (!isHTTP ? 'Flash blocked, missing .SWF, or additional flash security permissions may be needed for offline viewing to work (see Adobe Flash Global Security Settings Panel.)':'') : 'Check that flash file is not missing, or blocked from loading.'));
+      self._flash.timer = null;
+      if (!isHTTP) {
+        if (oBox) {
+          oBox.style.background = '#eee';
+          oBox.style.padding = '0.5em';
+          oBox.style.width = 'auto';
+          oBox.style.height = 'auto';
+        }
+      }
+      if (self.onloaderror) {
+        self.onloaderror();
+      }
+    },
+
     fakeConnect: function() {
       // fake it, connect anyhow
       self.writeDebug('Offline mode: Connection likely timed out. Faking it...');
@@ -333,6 +353,7 @@ function Arduino() {
   };
 
   this.writeDebug = function(s, sType) {
+
     if (!self.config.debug.enabled) {
       return false;
     }
@@ -492,7 +513,6 @@ function Arduino() {
     } catch (e) {
       self.writeDebug('Flash ExternalInterface ' + e.toString());
     }
-    // self.writeDebug('result: '+result);
     return result;
 
   };
@@ -519,15 +539,7 @@ function Arduino() {
 
     self.writeDebug('arduino::makeSWF: Loading ' + flash.url);
 
-    self._flash.timer = window.setTimeout(function() {
-      self.writeDebug('arduino::makeSWF: '+(getSWF() && typeof getSWF().PercentLoaded !== 'undefined' && getSWF().PercentLoaded() > 0 ? (!document.location.protocol.match(/http/) ? 'Additional flash security permissions may be needed for offline viewing to work (see Adobe Flash Global Security Settings Panel.)':'') : 'Check that flash file is not missing, or blocked from loading.'));
-/*
-      if (self.config.debug.offlineMode) {
-        self._flash.fakeConnect();
-      }
-*/
-      self._flash.timer = null;
-    }, 2000);
+    self._flash.timer = window.setTimeout(self._flash.startupFailed, 2000);
 
     if (!oMC.id) {
       didCreate = true;

@@ -9,10 +9,11 @@ body {
 
 a {
  text-decoration: none;
+ color: #006699;
 }
 
 a:hover {
- background-color: blue;
+ background-color: #3399cc;
  color: white;
 }
 
@@ -22,8 +23,17 @@ h1 {
  margin-bottom: 0.5em;
 }
 
+h1 a {
+ color: #000;
+ text-decoration: none;
+}
+
+h1 a:hover {
+ color: #fff;
+}
+
 h2 {
- margin-top: 1em;
+ margin-top: 1.5em;
 }
 
 h2 {
@@ -51,6 +61,10 @@ ul li button {
  top: 2px;
 }
 
+p {
+ line-height: 1.5em;
+}
+
 #device-status {
  color: #999;
 }
@@ -59,7 +73,7 @@ ul li button {
  /* two-column flex layout? This seems to work in modern browsers. */
  display: table;
  width: 50em;
- margin: -1em 0px 0px 0px;
+ margin: -1.25em 0px 0px 0px;
 }
 
 .column {
@@ -86,6 +100,16 @@ ul li button {
 pre, code {
  margin: 0px;
  padding: 0px;
+}
+
+code {
+ color: #006600;
+}
+
+p code,
+li code {
+ font-size: 1.1em;
+ line-height: 1em;
 }
 
 code span {

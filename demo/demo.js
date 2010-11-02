@@ -84,11 +84,22 @@ function CanvasThingy(analogPins) {
 
 arduino.onload = function() {
   // flash loaded, etc. Allow "connect" button.
-  var o = document.getElementById('do-connect');
+  var o = document.getElementById('do-connect'),
+      oMsg = document.getElementById('problem');
   if (o) {
     o.disabled = '';
     delete o.disabled;
   }
+  if (oMsg) {
+    // error recovery
+    oMsg.innerHTML = 'Flash loaded, ready to connect.';
+  }
+}
+
+arduino.onloaderror = function() {
+  // flash maybe could not load, or start (blocked, or offline case)
+  var o = document.getElementById('device-status-text');
+  o.innerHTML = o.innerHTML + '&nbsp; <span id="problem"><b>Problem</b>: Flash could not start. Missing SWF, blocked, or viewing offline? Check <a href="#flash-troubleshooting">Flash Troubleshooting</a>.</span>';
 }
 
 function startArduinoDemo() {

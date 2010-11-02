@@ -62,7 +62,7 @@ package {
 		private var arduinoJSObj:String = 'window.arduino._flash';
 
 		private var hideFlashUI:Boolean = false;
-		private var allowJSDebug:Boolean = false;
+		private var allowJSDebug:Boolean = true;
 		private var paramList:Object;
 		private var messages:Array = [];
 		private var textField: TextField = null;
@@ -70,16 +70,21 @@ package {
 		
 		private function flashDebug(txt:String):void {
 
-			if (!hideFlashUI) {
+			if (allowJSDebug) {
 				messages.push(txt);
 				var didCreate: Boolean = false;
 				textStyle.font = 'Arial';
-				textStyle.size = 11;
+				textStyle.size = 12;
 				// 320x240 if no stage dimensions (happens in IE, apparently 0 before stage resize event fires.)
 				var w:Number = this.stage.width?this.stage.width:320;
 				var h:Number = this.stage.height?this.stage.height:240;
 				if (textField == null) {
 					didCreate = true;
+					this.stage.scaleMode = 'noScale';
+					this.stage.align = 'TL';
+					var canvas: Sprite = new Sprite();
+					canvas.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+					addChild(canvas);
 					textField = new TextField();
 					textField.autoSize = TextFieldAutoSize.LEFT;
 					textField.x = 0;
@@ -93,7 +98,7 @@ package {
 				textField.width = w;
 				textField.height = h;
 				if (didCreate) {
-					this.addChild(textField);
+					canvas.addChild(textField);
 				}
 			}
 
@@ -145,6 +150,7 @@ package {
 		private function addEI():void {
 
 			if (ExternalInterface.available) {
+				writeDebug('-- arduino.js, SWF component --');
 				writeDebug('ExternalInterface available');
 				try {
 					writeDebug('Adding ExternalInterface callbacks...');
@@ -269,8 +275,8 @@ package {
 			if (paramList.hideFlashUI == 1) {
 				hideFlashUI = true;
 			}
-			if (paramList.allowJSDebug == 1) {
-				allowJSDebug = true;
+			if (paramList.allowJSDebug == 0) {
+				allowJSDebug = false;
 			}
 
 			addEI();
