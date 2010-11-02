@@ -6,10 +6,15 @@
 
 == Requirements
 
+A small shopping list of software is needed to get everything working.
+
+    Arduino and Flash overview, steps #1 and 2
     Arduino Uno (USB) running Standard Firmata 2.0+ software (via Arduino IDE)
     Socket/serial proxy such as SerialNet.pde (Processing IDE-based script), or serproxy executable
     Modern web browser with Flash 9 (for socket connection) and JavaScript enabled
-    If viewing offline, 
+    If viewing offline, you may need to adjust some Flash player security settings; see Flash Troubleshooting.
+
+Some serial/socks programs work better on Windows, but I've had good results with SerialNet. I found the Standard Firmata supplied with the Arduino IDE worked with SerialNet (in Processing), both set to run at 115200 baud on a Mac with Snow Leopard. SerialNet also worked nicely on a WinXP laptop.
 
 == Startup Process
 
@@ -17,14 +22,14 @@ An approximation of how things begin:
 
     arduino.config options can be set for flash (URL), debug, pin types etc.
     arduino.js starts, loads flash SWF (for socket connection to proxy) - may time out if flash blocked/missing or security errors
-    User-assigned arduino.onload() fires, ready to call arduino.connect()
+    User-assigned arduino.onload() fires - flash is ready to go, arduino.connect() can then be called
     arduino.connect() is called, with parameters for host and port eg. 127.0.0.1 and 5331
     Flash connects to socket proxy, talks to Arduino, reports back "OK"
     On "OK", arduino JS applies pin types based on arduino.config.pins - I/O is now ready.
 
 == Setup
 
-Calls are made via the "arduino" object. Generally, parameters are set and then referenced at initialization/onload().
+Calls are made via the "arduino" object; arduino.js and .swf are the only two files needed. Parameters as shown below can be set either inline or externally, and are then referenced at init/onload() time.
 
 arduino.config.flash.url = '/path/to/arduinojs.swf';
 
@@ -52,17 +57,50 @@ arduino.onload = function() {
     arduino.getAnalogData(<pin number>);
 
     // digital output
-    // a.writeDigitalPin(<pin number>, <0 or 1>);
+    a.writeDigitalPin(<pin number>, <0 or 1>);
 
     // pins configured with "PWM" type
-    // a.writeAnalogPin(<pin number>, <0 - 255>);
+    a.writeAnalogPin(<pin number>, <0 - 255>);
 
     // pins configured with "servo" type
-    // a.writeAnalogPin(<pin number>, <0-179>);
+    a.writeAnalogPin(<pin number>, <0-179>);
 
   });
 
 };
+
+== Reading Data: onReceiveData()-style Events vs. Polling
+
+When reading data from the Arduino, you can either use a setInterval-based polling-style approach that regularly calls getAnalogData() / getDigitalData(), or assign event handlers which will fire when analog and digital data is received. Depending on your use case, the latter may be more efficient.
+
+In either case, arduino.js caches data from all onReceiveData-type events in a local JS array, so user API calls to get data don't have to hit Flash.
+
+// Event callbacks for analog/digital RX
+
+arduino.onAnalogReceiveData = function(pinNumber, port, value) {
+
+  console.log('Analog RX: pin ' + pinNumber + ' = ' + value + ', port: '+port);
+
+}
+
+arduino.onAnalogReceiveData = function(pinNumber, port, value) {
+
+  console.log('Digital RX: pin ' + pinNumber + ' = ' + value + ', port: '+port);
+
+}
+
+// Alternate: Polling-style, read inputs at regular interval
+
+function readData() {
+
+  console.log('Pin 13 value: ' + arduino.getDigitalData(13));
+  console.log('Analog input 0 value: ' + arduino.getAnalogData(0));
+
+}
+
+setInterval(readData, 250);
+
+Note that analog data RX events may fire quite regularly due to electrical noise and fluctuating input values.
 
 == Pin Configuration
 
@@ -73,7 +111,7 @@ arduino.config.pins = [
   // - type --------- label ----------- options ---
 
   null,            // Pin 0         null (is RX)
-  nulll,           // Pin 1         null (is TX)
+  null,            // Pin 1         null (is TX)
   'digitalOut',    // Pin 2         digitalIn or digitalOut
   'digitalOut',    // Pin 3         pwmOut or digitalIn or digitalOut
   'digitalOut',    // Pin 4         digitalIn or digitalOut
@@ -108,10 +146,10 @@ Check the arduinojs.swf file and see if it mentions security-related messages. I
 
 == General Disclaimer
 
-Of course, this is experimental; check arduino.js for the actual code, API and comments.
+Of course, this is experimental; check arduino.js for the actual code, other API methods and comments.
 
 == About
 
-arduino.js is an experiment by Scott Schiller: http://www.schillmania.com/
+arduino.js is an experiment by Scott Schiller.
 
 This project would not have been possible without open-source code and libraries made available by other Arduino fans. See license.txt for details.
