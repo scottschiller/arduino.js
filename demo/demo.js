@@ -6,6 +6,8 @@
 /*jslint white: false, onevar: true, undef: true, nomen: false, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true, regexp: false */
 /*global arduino, window, document, setTimeout, setInterval */
 
+var arduinoTimer = null;
+
 function GraphItem(oCanvasCTX, index, x, y, w, h, maxY) {
 
   var history = [], i;
@@ -96,16 +98,16 @@ arduino.onload = function() {
     oMsg.innerHTML = 'Flash loaded, ready to connect.';
     // try to re-hide the flash, too?
     oFlash.style.background = 'transparent';
-    oFlash.style.width = '8px';
-    oFlash.style.height = '8px';
+    oFlash.style.width = '1px';
+    oFlash.style.height = '1px';
   }
-}
+};
 
 arduino.onloaderror = function() {
   // flash maybe could not load, or start (blocked, or offline case)
   var o = document.getElementById('device-status-text');
   o.innerHTML = o.innerHTML + '&nbsp; <span id="problem"><b>Problem</b>: Flash could not start. Missing SWF, blocked, or viewing offline? Check <a href="#flash-troubleshooting">Flash Troubleshooting</a>.</span>';
-}
+};
 
 function startArduinoDemo() {
   
@@ -127,13 +129,13 @@ function startArduinoDemo() {
 
   function randomizeAnalog() {
 
-    arduino.writeAnalogPin(this.rel, parseInt(Math.random()*1023));
+    arduino.writeAnalogPin(this.rel, parseInt(Math.random()*1023, 10));
 
   }
 
   function randomizePWM() {
 
-    arduino.writeAnalogPin(this.rel, parseInt(Math.random()*256));
+    arduino.writeAnalogPin(this.rel, parseInt(Math.random()*256, 10));
 
   }
 
@@ -144,17 +146,17 @@ function startArduinoDemo() {
         i, item, btn = document.createElement('button'), o;
     for (i=0; i<pins.length-1; i++) {
       item = document.getElementById('pin'+i+'-button');
-      if (pins[i] == 'digitalOut') {
+      if (pins[i] === 'digitalOut') {
         o = item.appendChild(btn.cloneNode(true));
         o.innerHTML = 'invert';
         o.rel = i;
         o.onclick = swapDigital;
-      } else if (pins[i] == 'analogOut') {
+      } else if (pins[i] === 'analogOut') {
         o = item.appendChild(btn.cloneNode(true));
         o.innerHTML = 'randomize';
         o.rel = i;
         o.onclick = randomizeAnalog;
-      } else if (pins[i] == 'pwmOut') {
+      } else if (pins[i] === 'pwmOut') {
         o = item.appendChild(btn.cloneNode(true));
         o.innerHTML = 'randomize';
         o.rel = i;
@@ -202,14 +204,14 @@ function startArduinoDemo() {
   function getBlinkInterval() {
     // use text input value.
     var defaultInterval = 1000,
-        o = parseInt(document.getElementById('blink-interval').value),
+        o = parseInt(document.getElementById('blink-interval').value, 10),
         i = (!isNaN(o) ? Math.abs(o) : defaultInterval);
     return i;
   }
 
   function doPin13Blink() {
     if (arduinoTimer) {
-      arduino.writeDigitalPin(13, arduino.getDigitalData(13) == 1 ? 0 : 1);
+      arduino.writeDigitalPin(13, arduino.getDigitalData(13) === 1 ? 0 : 1);
       setTimeout(doPin13Blink, getBlinkInterval());
     }
   }
@@ -243,6 +245,4 @@ function startArduinoDemo() {
 
   });
   
-};
-
-var arduinoTimer = null;
+}
