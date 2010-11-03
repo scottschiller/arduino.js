@@ -2,7 +2,7 @@
  *
  * arduino.js: JavaScript-based Arduino communication
  * http://schillmania.com/projects/arduino-js/
- * Copyright 2010 (c) Scott Schiller,
+ * Copyright 2010 (c) Scott Schiller, http://schillmania.com/
  * Released under an MIT license.
  * Version: 2010.10.31
  *
@@ -318,11 +318,16 @@ function Arduino() {
     },
 
     startupFailed: function() {
-      var o = getSWF(), oBox = document.getElementById(arduino.config.flash.containerID),
+      var o = getSWF(), oBox = document.getElementById(self.config.flash.containerID),
           didLoad = o && typeof o.PercentLoaded !== 'undefined' && o.PercentLoaded() > 0,
-          isHTTP = document.location.protocol.match(/http/);
+          isHTTP = document.location.protocol.match(/http/), complaint;
       self.writeDebug('arduino::flash::SWF load/start-up failed');
-      self.writeDebug('arduino::makeSWF: '+(!didLoad ? (!isHTTP ? 'Flash blocked, missing .SWF, or additional flash security permissions may be needed for offline viewing to work (see Adobe Flash Global Security Settings Panel.)':'') : 'Check that flash file is not missing, or blocked from loading.'));
+      if (didLoad) {
+        complaint = (!isHTTP ? 'Additional flash security permissions may be needed for offline viewing to work (see Adobe Flash Global Security Settings Panel.' : 'Flash blocked from loading, or cross-domain security permissions needed?');
+      } else {
+        complaint = 'Missing SWF, or flash blocked?';
+      }
+      self.writeDebug('arduino::makeSWF: ' + complaint);
       self._flash.timer = null;
       if (!isHTTP) {
         if (oBox) {
