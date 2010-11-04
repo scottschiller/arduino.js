@@ -321,6 +321,14 @@ function Arduino() {
       var o = getSWF(), oBox = document.getElementById(self.config.flash.containerID),
           didLoad = o && typeof o.PercentLoaded !== 'undefined' && o.PercentLoaded() > 0,
           isHTTP = document.location.protocol.match(/http/), complaint;
+      function resizeBox() {
+        if (oBox) {
+          oBox.style.background = '#eee';
+          oBox.style.padding = '0.5em';
+          oBox.style.width = 'auto';
+          oBox.style.height = 'auto';
+        }
+      }
       self.writeDebug('arduino::flash::SWF load/start-up failed');
       if (didLoad) {
         complaint = (!isHTTP ? 'Additional flash security permissions may be needed for offline viewing to work (see Adobe Flash Global Security Settings Panel.' : 'Flash blocked from loading, or cross-domain security permissions needed?');
@@ -329,14 +337,7 @@ function Arduino() {
       }
       self.writeDebug('arduino::makeSWF: ' + complaint);
       self._flash.timer = null;
-      if (!isHTTP) {
-        if (oBox) {
-          oBox.style.background = '#eee';
-          oBox.style.padding = '0.5em';
-          oBox.style.width = 'auto';
-          oBox.style.height = 'auto';
-        }
-      }
+      resizeBox();
       if (self.onloaderror) {
         self.onloaderror();
       }
@@ -543,7 +544,6 @@ function Arduino() {
         oEmbed, tmp, s, x;
 
     self.writeDebug('arduino::makeSWF: Loading ' + flash.url);
-
     self._flash.timer = window.setTimeout(self._flash.startupFailed, 2000);
 
     if (!oMC.id) {
