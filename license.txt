@@ -1,7 +1,7 @@
 /** @license
  *
  * arduino.js: JavaScript-based Arduino communication
- * http://github.com/scottschiller/arduino-js/
+ * http://github.com/scottschiller/arduino.js/
  * copyright 2010 (c) Scott Schiller, http://schillmania.com/
  * Released under an MIT license.
  *
