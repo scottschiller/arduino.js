@@ -1,5 +1,5 @@
 body {
- color: #000;
+ color: #333;
  font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, "sans-serif";
 }
 
@@ -17,10 +17,32 @@ a:hover {
  color: white;
 }
 
+/*
+h1, h2 {
+ background: #fcfcfc;
+}
+*/
+
+h1, h2 {
+ border: 1px dotted #ccc;
+ border-left: none;
+ border-right: none;
+}
+
 h1 {
+ max-width: 16.65em;
  font-size: 300%;
  margin-top: 0.25em;
  margin-bottom: 0.5em;
+}
+
+h1 span {
+ display: inline-block;
+ background: #fff;
+ border-top: none;
+ border-bottom: 0.15em solid #333;
+ padding-bottom: 0.05em;
+ margin-bottom: -1px;
 }
 
 h1 a {
@@ -33,12 +55,15 @@ h1 a:hover {
 }
 
 h2 {
- margin-top: 1.5em;
+ margin-top: 2em;
+ color: #333;
 }
 
-h2 {
- padding-bottom: 0.1em;
- border-bottom: 1px solid #999;
+h2 span {
+ display: inline-block;
+ border-bottom: 0.2em solid #333;
+ padding: 0.2em 0px 0.1em 0px;
+ margin-bottom: -1px;
 }
 
 ul {
@@ -90,11 +115,8 @@ p {
 
 #canvas-box {
  padding: 0px 5px;
- border: 1px solid #ccc;
+ border: 1px dotted #ccc;
  display: inline-block;
- -moz-border-radius: 5px;
- -webkit-border-radius: 5px;
- border-radius: 5px;
 }
 
 pre, code {
@@ -119,8 +141,7 @@ code span {
 pre {
  background: #fcfcfc;
  padding: 1.5em;
- border-left: 3px solid #eee;
- border-right: 3px solid #eee;
+ border-left: 0.4em solid #eee;
  font-size: small;
 }
 
@@ -130,4 +151,8 @@ pre {
  top: 0px;
  color: #999;
  font-size: small;
+}
+
+#device-status-text {
+ margin-bottom: 0px;
 }

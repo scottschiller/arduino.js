@@ -50,7 +50,7 @@ arduino.onload = function() {
 
 <div id="content">
 
- <h1><a href="http://www.schillmania.com/projects/arduino-js" title="arduino.js: JavaScript / Arduino Uno communication API">arduino.js</a></h1>
+ <h1><span><a href="http://www.schillmania.com/projects/arduino-js" title="arduino.js: JavaScript / Arduino Uno communication API">arduino.js</a></span></h1>
  <p>JavaScript-based Arduino Uno communication</p>
 
  <p id="publish-date" title="Publish date">version: 2010.10.31</p>
@@ -63,7 +63,7 @@ arduino.onload = function() {
 
   <div class="column">
 
-   <h2>Analog Inputs</h2>
+   <h2><span>Analog Inputs</span></h2>
    <ul>
     <li>A<sub>in0</sub>: <span id="analog-pin0-value"> </span></li>
     <li>A<sub>in1</sub>: <span id="analog-pin1-value"> </span></li>
@@ -87,7 +87,7 @@ arduino.onload = function() {
 
   <div class="column">
 
-   <h2>Standard I/O Pins</h2>
+   <h2><span>Standard I/O Pins</span></h2>
    <ul>
     <li>Pin 2 <span id="pin2-value"> </span> <span id="pin2-button"></span></li>
     <li>Pin 3 <span id="pin3-value"> </span> <span id="pin3-button"></span></li>
@@ -103,7 +103,7 @@ arduino.onload = function() {
     <li>Pin 13 <span id="pin13-value"> </span> <span id="pin13-button"></span></li>
    </ul>
 
-   <h2 style="margin-top:1.5em">Pin 13/LED Blink Test</h2>
+   <h2 style="margin-top:1.5em"><span>Pin 13/LED Blink Test</span></h2>
    <p>Pin 13 typically has a surface-mount LED (eg. as with the Uno) representing binary output.</p>
    <p>Interval (msec): &nbsp;<input id="blink-interval" type="text" value="1000" style="width:5em" /></p>
 
@@ -113,7 +113,7 @@ arduino.onload = function() {
 
  <div class="column-wrapper">
 
-  <h2 id="requirements">Requirements</h2>
+  <h2 id="requirements"><span>Requirements</span></h2>
 
   <p>A small shopping list of software is needed to get everything working.</p>
 
@@ -127,10 +127,10 @@ arduino.onload = function() {
 
  <p>Some serial/socks programs work better on Windows, but I've had good results with SerialNet. I found the Standard Firmata supplied with the Arduino IDE worked with SerialNet (in Processing), both set to run at 115200 baud on a Mac with Snow Leopard. SerialNet also worked nicely on a WinXP laptop.</p>
 
-  <h2 id="download">Download</h2>
+  <h2 id="download"><span>Download</span></h2>
   <p>See the latest at <a href="http://github.com/scottschiller/arduino.js">github.com/scottschiller/arduino-js</a>.</p>
 
-  <h2 id="startup">Startup Process</h2>
+  <h2 id="startup"><span>Startup Process</span></h2>
 
   <p>An approximation of how things begin:</p>
 
@@ -143,7 +143,7 @@ arduino.onload = function() {
    <li>On "OK", arduino JS applies pin types based on arduino.config.pins - I/O is now ready.</li>
   </ul>
 
-  <h2 id="setup">Setup</h2>
+  <h2 id="setup"><span>Setup</span></h2>
 
   <p>Calls are made via the "arduino" object; arduino.js and .swf are the only two files needed. Parameters as shown below can be set either inline or externally, and are then referenced at init/<code>onload()</code> time.</p>
 
@@ -186,7 +186,7 @@ arduino.onload = function() {
 };
 </code></pre>
 
-  <h2 id="onreceivedata-events">Reading Data: onReceiveData()-style Events vs. Polling</h2>
+  <h2 id="onreceivedata-events"><span>Reading Data: onReceiveData()-style Events vs. Polling</span></h2>
 
   <p>When reading data from the Arduino, you can either use a <code>setInterval</code>-based polling-style approach that regularly calls <code>getAnalogData()</code> / <code>getDigitalData()</code>, or assign event handlers which will fire when analog and digital data is received. Depending on your use case, the latter may be more efficient.</p>
 
@@ -221,7 +221,7 @@ setInterval(readData, 250);
 
   <p>Note that analog data RX events may fire quite regularly due to electrical noise and fluctuating input values.</p>
 
-  <h2 id="pin-configuration">Pin Configuration</h2>
+  <h2 id="pin-configuration"><span>Pin Configuration</span></h2>
 
   <p>Pins can be set up according to available types (options): <code>digitalIn</code>, <code>digitalOut</code>, <code>pwmOut</code> or <code>servo</code>. The dedicated analog ports are <code>analogIn</code> only.</p>
 
@@ -257,17 +257,17 @@ setInterval(readData, 250);
 
   <p>The pin configuration array is applied when the arduino connection is established, after <code>connect()</code> and before the connect success handler.</p>
 
-  <h2 id="flash-troubleshooting">Flash Troubleshooting</h2>
+  <h2 id="flash-troubleshooting"><span>Flash Troubleshooting</span></h2>
 
   <p>If you are viewing this page offline (non-HTTP eg. file:// or c:\ and so on), you may need to adjust the Flash Player Security Settings and allow this file as a "trusted" location.</p>
 
   <p>Check the <a href="swf/arduinojs.swf">arduinojs.swf</a> file and see if it mentions security-related messages. If so, hit up the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings</a> panel. You will need to add the current location (Edit Locations -&gt; Add Location -&gt; Browse For Folder) and choose the current directory/folder in order for JS + Flash communication to work offline.</p>
 
-  <h2 id="general-disclaimer">General Disclaimer</h2>
+  <h2 id="general-disclaimer"><span>General Disclaimer</span></h2>
 
   <p>Of course, this is experimental; check <a href="script/arduino.js">arduino.js</a> for the actual code, other API methods and comments.</p>  
 
-  <h2 id="about">About</h2>
+  <h2 id="about"><span>About</span></h2>
 
   <p>arduino.js is an experiment by <a href="http://www.schillmania.com/" title="Scott Schiller's personal site">Scott Schiller</a>.</p>
 
